@@ -6,13 +6,12 @@ from zones.models import Zone
 from attacks.models import Attack
 from attacks.services import AttackService
 
-User = get_user_model()
-
 
 @pytest.mark.django_db
 class TestAttackService:
     def test_attack_validation(self):
         """Test attack validation logic"""
+        User = get_user_model()
         attacker = User.objects.create_user(username='attacker', password='testpass')
         defender = User.objects.create_user(username='defender', password='testpass')
 
@@ -32,6 +31,7 @@ class TestAttackService:
 
     def test_attack_own_zone_fails(self):
         """Test that users cannot attack their own zones"""
+        User = get_user_model()
         user = User.objects.create_user(username='testuser', password='testpass')
         zone = Zone.objects.create(
             id='test_zone',
@@ -47,6 +47,7 @@ class TestAttackService:
 
     def test_battle_outcome_calculation(self):
         """Test battle outcome calculation"""
+        User = get_user_model()
         attacker = User.objects.create_user(username='attacker', password='testpass', level=5)
         defender = User.objects.create_user(username='defender', password='testpass', level=3)
 
