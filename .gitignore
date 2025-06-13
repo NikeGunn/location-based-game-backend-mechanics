@@ -55,6 +55,5 @@ node_modules/
 firebase-credentials.json
 *-firebase-adminsdk-*.json
 
-
-# Add copilot-instructions.md
+# GitHub Copilot instructions (keep private)
 copilot-instructions.md
