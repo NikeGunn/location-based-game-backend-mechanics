@@ -54,3 +54,7 @@ node_modules/
 # Firebase credentials
 firebase-credentials.json
 *-firebase-adminsdk-*.json
+
+
+# Add copilot-instructions.md
+copilot-instructions.md
