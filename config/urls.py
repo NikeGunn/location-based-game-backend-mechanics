@@ -33,10 +33,6 @@ class APIRootView(APIView):
                 'leaderboard': '/api/v1/leaderboard/',
                 'admin': '/admin/',
             },
-            'documentation': {
-                'postman_collection': '/postman_collection.json',
-                'setup_guide': '/SETUP_COMPLETE.md'
-            }
         })
 
 urlpatterns = [
