@@ -1,0 +1,976 @@
+{
+  "info": {
+    "name": "Location-Based Game Backend API",
+    "description": "Complete API test collection for the Django location-based mobile game backend. Includes authentication, zone management, attacks, and leaderboards.",
+    "version": "1.0.0",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:8000/api/v1",
+      "type": "string"
+    },
+    {
+      "key": "access_token",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "refresh_token",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "user_id",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "zone_id",
+      "value": "zone_001",
+      "type": "string"
+    }
+  ],
+  "item": [
+    {
+      "name": "Authentication",
+      "item": [
+        {
+          "name": "Register New User",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"username\": \"testplayer1\",\n  \"email\": \"testplayer1@gametest.com\",\n  \"password\": \"GamePass123!\",\n  \"first_name\": \"Test\",\n  \"last_name\": \"Player\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/auth/register/",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "auth",
+                "register",
+                ""
+              ]
+            },
+            "description": "Register a new user account for testing"
+          },
+          "response": []
+        },
+        {
+          "name": "Register Second User",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"username\": \"testplayer2\",\n  \"email\": \"testplayer2@gametest.com\",\n  \"password\": \"GamePass123!\",\n  \"first_name\": \"Another\",\n  \"last_name\": \"Player\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/auth/register/",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "auth",
+                "register",
+                ""
+              ]
+            },
+            "description": "Register a second user for testing battles"
+          },
+          "response": []
+        },
+        {
+          "name": "Login User",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 200) {",
+                  "    const response = pm.response.json();",
+                  "    pm.collectionVariables.set('access_token', response.access);",
+                  "    pm.collectionVariables.set('refresh_token', response.refresh);",
+                  "    console.log('Tokens saved successfully');",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"username\": \"testplayer1\",\n  \"password\": \"GamePass123!\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/auth/login/",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "auth",
+                "login",
+                ""
+              ]
+            },
+            "description": "Login and get JWT tokens"
+          },
+          "response": []
+        },
+        {
+          "name": "Refresh Token",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"refresh\": \"{{refresh_token}}\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/auth/refresh/",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "auth",
+                "refresh",
+                ""
+              ]
+            },
+            "description": "Refresh the access token"
+          },
+          "response": []
+        },
+        {
+          "name": "Get User Profile",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/auth/profile/",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "auth",
+                "profile",
+                ""
+              ]
+            },
+            "description": "Get current user profile information"
+          },
+          "response": []
+        }
+      ],
+      "description": "Authentication endpoints for user registration, login, and token management"
+    },
+    {
+      "name": "Zones",
+      "item": [
+        {
+          "name": "Get All Zones",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/zones/",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "zones",
+                ""
+              ]
+            },
+            "description": "Get list of all zones (no authentication required)"
+          },
+          "response": []
+        },
+        {
+          "name": "Get Nearby Zones",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/zones/nearby/?latitude=37.7749&longitude=-122.4194&radius=1000",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "zones",
+                "nearby",
+                ""
+              ],
+              "query": [
+                {
+                  "key": "latitude",
+                  "value": "37.7749",
+                  "description": "User's current latitude"
+                },
+                {
+                  "key": "longitude",
+                  "value": "-122.4194",
+                  "description": "User's current longitude"
+                },
+                {
+                  "key": "radius",
+                  "value": "1000",
+                  "description": "Search radius in meters"
+                }
+              ]
+            },
+            "description": "Get zones near the user's location"
+          },
+          "response": []
+        },
+        {
+          "name": "Get Single Zone",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/zones/{{zone_id}}/",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "zones",
+                "{{zone_id}}",
+                ""
+              ]
+            },
+            "description": "Get details of a specific zone"
+          },
+          "response": []
+        },
+        {
+          "name": "Claim Zone",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"latitude\": 37.7750,\n  \"longitude\": -122.4193\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/zones/{{zone_id}}/claim/",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "zones",
+                "{{zone_id}}",
+                "claim",
+                ""
+              ]
+            },
+            "description": "Claim a zone (user must be within capture radius)"
+          },
+          "response": []
+        },
+        {
+          "name": "Check Into Zone",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"latitude\": 37.7750,\n  \"longitude\": -122.4193\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/zones/{{zone_id}}/checkin/",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "zones",
+                "{{zone_id}}",
+                "checkin",
+                ""
+              ]
+            },
+            "description": "Check into a zone to gain XP"
+          },
+          "response": []
+        }
+      ],
+      "description": "Zone management endpoints for listing, claiming, and checking into zones"
+    },
+    {
+      "name": "Attacks",
+      "item": [
+        {
+          "name": "Attack Zone",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"zone_id\": \"{{zone_id}}\",\n  \"latitude\": 37.7750,\n  \"longitude\": -122.4193\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/attacks/",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "attacks",
+                ""
+              ]
+            },
+            "description": "Attack a zone owned by another player"
+          },
+          "response": []
+        },
+        {
+          "name": "Get Attack History",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/attacks/",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "attacks",
+                ""
+              ]
+            },
+            "description": "Get user's attack history"
+          },
+          "response": []
+        },
+        {
+          "name": "Check Attack Cooldown",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/attacks/cooldown/",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "attacks",
+                "cooldown",
+                ""
+              ]
+            },
+            "description": "Check if user can attack (cooldown status)"
+          },
+          "response": []
+        },
+        {
+          "name": "Get Attacks Received",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/attacks/?type=received",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "attacks",
+                ""
+              ],
+              "query": [
+                {
+                  "key": "type",
+                  "value": "received",
+                  "description": "Get attacks received by this user"
+                }
+              ]
+            },
+            "description": "Get attacks received by the current user"
+          },
+          "response": []
+        }
+      ],
+      "description": "Attack system endpoints for battling other players and checking cooldowns"
+    },
+    {
+      "name": "Leaderboard",
+      "item": [
+        {
+          "name": "Get All Leaderboards",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/leaderboard/",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "leaderboard",
+                ""
+              ]
+            },
+            "description": "Get all leaderboard categories"
+          },
+          "response": []
+        },
+        {
+          "name": "Get XP Leaderboard",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/leaderboard/xp/",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "leaderboard",
+                "xp",
+                ""
+              ]
+            },
+            "description": "Get XP leaderboard rankings"
+          },
+          "response": []
+        },
+        {
+          "name": "Get Zones Leaderboard",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/leaderboard/zones/",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "leaderboard",
+                "zones",
+                ""
+              ]
+            },
+            "description": "Get zones owned leaderboard"
+          },
+          "response": []
+        },
+        {
+          "name": "Get Attacks Leaderboard",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/leaderboard/attacks/",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "leaderboard",
+                "attacks",
+                ""
+              ]
+            },
+            "description": "Get successful attacks leaderboard"
+          },
+          "response": []
+        },
+        {
+          "name": "Get Level Leaderboard",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/leaderboard/level/",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "leaderboard",
+                "level",
+                ""
+              ]
+            },
+            "description": "Get level leaderboard rankings"
+          },
+          "response": []
+        }
+      ],
+      "description": "Leaderboard endpoints for various game statistics"
+    },
+    {
+      "name": "Admin & Testing",
+      "item": [
+        {
+          "name": "Django API Root",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                ""
+              ]
+            },
+            "description": "Get API root with browsable interface"
+          },
+          "response": []
+        },
+        {
+          "name": "Health Check",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:8000/",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "8000",
+              "path": [
+                ""
+              ]
+            },
+            "description": "Basic health check for the Django server"
+          },
+          "response": []
+        },
+        {
+          "name": "Admin Panel",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:8000/admin/",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "8000",
+              "path": [
+                "admin",
+                ""
+              ]
+            },
+            "description": "Access Django admin panel (use admin/admin123)"
+          },
+          "response": []
+        }
+      ],
+      "description": "Administrative and testing endpoints"
+    },
+    {
+      "name": "Complete Test Flow",
+      "item": [
+        {
+          "name": "1. Register Test User",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('User registration successful', function () {",
+                  "    pm.response.to.have.status(201);",
+                  "});",
+                  "",
+                  "if (pm.response.code === 201) {",
+                  "    const response = pm.response.json();",
+                  "    pm.collectionVariables.set('user_id', response.user.id);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"username\": \"flowtest\",\n  \"email\": \"flowtest@gametest.com\",\n  \"password\": \"FlowTest123!\",\n  \"first_name\": \"Flow\",\n  \"last_name\": \"Test\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/auth/register/",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "auth",
+                "register",
+                ""
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "2. Login Test User",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Login successful', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "if (pm.response.code === 200) {",
+                  "    const response = pm.response.json();",
+                  "    pm.collectionVariables.set('access_token', response.access);",
+                  "    pm.collectionVariables.set('refresh_token', response.refresh);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"username\": \"flowtest\",\n  \"password\": \"FlowTest123!\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/auth/login/",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "auth",
+                "login",
+                ""
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "3. Get All Zones",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Zones retrieved successfully', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "if (pm.response.code === 200) {",
+                  "    const zones = pm.response.json();",
+                  "    if (zones.length > 0) {",
+                  "        pm.collectionVariables.set('zone_id', zones[0].id);",
+                  "    }",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/zones/",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "zones",
+                ""
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "4. Claim a Zone",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Zone claim attempted', function () {",
+                  "    pm.expect(pm.response.code).to.be.oneOf([200, 201, 400]);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"latitude\": 37.7750,\n  \"longitude\": -122.4193\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/zones/{{zone_id}}/claim/",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "zones",
+                "{{zone_id}}",
+                "claim",
+                ""
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "5. Check Into Zone",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Zone checkin attempted', function () {",
+                  "    pm.expect(pm.response.code).to.be.oneOf([200, 201, 400]);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"latitude\": 37.7750,\n  \"longitude\": -122.4193\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/zones/{{zone_id}}/checkin/",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "zones",
+                "{{zone_id}}",
+                "checkin",
+                ""
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "6. Get Updated Profile",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Profile retrieved', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/auth/profile/",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "auth",
+                "profile",
+                ""
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "7. Check Leaderboard",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Leaderboard retrieved', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/leaderboard/xp/",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "leaderboard",
+                "xp",
+                ""
+              ]
+            }
+          },
+          "response": []
+        }
+      ],
+      "description": "Complete test flow demonstrating the full user journey"
+    }
+  ],
+  "event": [
+    {
+      "listen": "prerequest",
+      "script": {
+        "type": "text/javascript",
+        "exec": [
+          "// Pre-request script for logging",
+          "console.log('Making request to:', pm.request.url.toString());"
+        ]
+      }
+    },
+    {
+      "listen": "test",
+      "script": {
+        "type": "text/javascript",
+        "exec": [
+          "// Global test script",
+          "pm.test('Response time is reasonable', function () {",
+          "    pm.expect(pm.response.responseTime).to.be.below(5000);",
+          "});",
+          "",
+          "pm.test('Response has valid JSON structure', function () {",
+          "    try {",
+          "        pm.response.json();",
+          "    } catch (e) {",
+          "        // Only fail if response should be JSON (not for HTML responses)",
+          "        if (pm.response.headers.get('Content-Type') && pm.response.headers.get('Content-Type').includes('application/json')) {",
+          "            pm.expect.fail('Response is not valid JSON');",
+          "        }",
+          "    }",
+          "});"
+        ]
+      }
+    }
+  ]
+}
