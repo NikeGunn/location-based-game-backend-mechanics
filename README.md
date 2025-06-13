@@ -239,7 +239,3 @@ curl -X POST http://localhost:8000/api/v1/attacks/attack/ \
 3. Write tests for new features
 4. Follow the existing code structure
 5. Update documentation for API changes
-
-## License
-
-[Your License Here]
