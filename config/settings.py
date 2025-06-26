@@ -12,7 +12,7 @@ SECRET_KEY = config('SECRET_KEY', default='django-insecure-change-me-in-producti
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = config('DEBUG', default=True, cast=bool)
 
-ALLOWED_HOSTS = config('ALLOWED_HOSTS', default='localhost,127.0.0.1', cast=lambda v: [s.strip() for s in v.split(',')])
+ALLOWED_HOSTS = config('ALLOWED_HOSTS', default='localhost,127.0.0.1,192.168.1.114,0.0.0.0,host.docker.internal', cast=lambda v: [s.strip() for s in v.split(',')])
 
 # Application definition
 DJANGO_APPS = [
@@ -28,6 +28,7 @@ DJANGO_APPS = [
 THIRD_PARTY_APPS = [
     'rest_framework',
     'rest_framework_simplejwt',
+    'corsheaders',
 ]
 
 LOCAL_APPS = [
@@ -43,6 +44,7 @@ INSTALLED_APPS = DJANGO_APPS + THIRD_PARTY_APPS + LOCAL_APPS
 AUTH_USER_MODEL = 'users.User'
 
 MIDDLEWARE = [
+    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -162,3 +164,53 @@ if os.name == 'nt':  # Windows
     conda_bin = r'C:\ProgramData\anaconda3\Library\bin'
     if conda_bin not in os.environ.get('PATH', ''):
         os.environ['PATH'] = conda_bin + ';' + os.environ.get('PATH', '')
+
+# CORS Configuration for React Native Expo App
+CORS_ALLOWED_ORIGINS = [
+    "http://localhost:3000",  # React development server
+    "http://127.0.0.1:3000",
+    "http://localhost:19006",  # Expo web
+    "http://127.0.0.1:19006",
+    "http://localhost:8081",  # React Native Metro bundler
+    "http://127.0.0.1:8081",
+    "http://localhost:8000",  # Django API (Docker)
+    "http://127.0.0.1:8000",
+    "http://192.168.1.114:8000",  # Your machine's IP address
+    "http://host.docker.internal:8000",  # Docker Desktop on Windows/Mac
+]
+
+# Allow all origins in development (be more restrictive in production)
+if DEBUG:
+    CORS_ALLOW_ALL_ORIGINS = True
+else:
+    CORS_ALLOW_ALL_ORIGINS = False
+
+# CORS settings for mobile app
+CORS_ALLOW_CREDENTIALS = True
+
+# Headers that will be allowed in requests
+CORS_ALLOW_HEADERS = [
+    'accept',
+    'accept-encoding',
+    'authorization',
+    'content-type',
+    'dnt',
+    'origin',
+    'user-agent',
+    'x-csrftoken',
+    'x-requested-with',
+]
+
+# HTTP methods that will be allowed
+CORS_ALLOWED_METHODS = [
+    'DELETE',
+    'GET',
+    'OPTIONS',
+    'PATCH',
+    'POST',
+    'PUT',
+]
+
+# For React Native/Expo apps, you might need these additional settings
+CORS_ALLOW_PRIVATE_NETWORK = True
+CORS_PREFLIGHT_MAX_AGE = 86400  # 24 hours
